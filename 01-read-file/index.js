@@ -5,7 +5,7 @@ const pathFile = path.join(__dirname, 'text.txt');
 
 const myReadText = fs.createReadStream(pathFile, 'utf-8');
 
-myReadText.on('data', function (chunk) {
+myReadText.on('data', (chunk) => {
   console.log('New data received:\n' + chunk);
 });
 
