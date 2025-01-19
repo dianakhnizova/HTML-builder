@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const readLine = require('readline');
 
 const stdIn = readLine.createInterface({
@@ -7,36 +7,35 @@ const stdIn = readLine.createInterface({
 });
 
 const filePath = './02-write-file/newFile.txt';
-const newFile = fs.createWriteStream(filePath, {
-  flags: 'a',
-});
 
 console.log('\nHello! Enter text to write to file:\n');
 console.log('Enter "exit" for exit\n');
 console.log('To interrupt, press "Ctrl + c"\n');
 
-stdIn.on('line', (input) => {
+async function writeToFile(text) {
+  try {
+    await fs.appendFile(filePath, text + '\n');
+    console.log('\nThe text is written to the file!\nKeep typing...\n');
+  } catch (err) {
+    console.error('\nError writing to file:', err);
+    stdIn.close();
+    process.exit();
+  }
+}
+
+stdIn.on('line', async (input) => {
   if (input === 'exit') {
+    process.stdout.write('\nIt was completed! Goodbye!');
     stdIn.close();
     process.exit(1);
   }
-  newFile.write(input + '\n', (err) => {
-    if (err) {
-      console.error('\nError writing to file:', err);
-      stdIn.close();
-      process.exit();
-    }
-    console.log('\nThe text is written to the file!\nKeep typing...');
+  await writeToFile(input);
+});
+
+process.on('SIGINT', async () => {
+  setImmediate(() => {
+    stdIn.close();
+    process.stdout.write('\nIt was completed! Goodbye!\n');
+    process.exit();
   });
-});
-
-stdIn.on('close', () => {
-  console.log('\nIt was completed! Goodbye!');
-  newFile.end();
-});
-
-process.on('SIGINT', () => {
-  process.stdout.write('\nIt was completed! Goodbye!');
-  stdIn.close();
-  process.exit();
 });
