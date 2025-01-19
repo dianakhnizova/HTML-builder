@@ -17,7 +17,6 @@ console.log('To interrupt, press "Ctrl + c"\n');
 
 stdIn.on('line', (input) => {
   if (input === 'exit') {
-    console.log('\nIt was completed! Goodbye!');
     stdIn.close();
     process.exit(1);
   }
@@ -25,10 +24,15 @@ stdIn.on('line', (input) => {
     if (err) {
       console.error('\nError writing to file:', err);
       stdIn.close();
-      process.exit(1);
+      process.exit();
     }
     console.log('\nThe text is written to the file!\nKeep typing...');
   });
+});
+
+stdIn.on('close', () => {
+  console.log('\nIt was completed! Goodbye!');
+  newFile.end();
 });
 
 process.on('SIGINT', () => {
