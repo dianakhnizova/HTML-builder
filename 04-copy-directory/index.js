@@ -1,36 +1,18 @@
 const fs = require('fs').promises;
-const { copyFile } = require('fs');
 const path = require('path');
 
 const currentDirPath = path.join(__dirname, 'files');
 const newDirPath = path.join(__dirname, 'files-copy');
 
-async function recursiveCopy(srcDir, destDir) {
-  try {
-    await fs.mkdir(destDir, { recursive: true });
-    const files = await fs.readdir(srcDir, { withFileTypes: true });
-
-    for (const file of files) {
-      const currentPath = path.join(srcDir, file.name);
-      const newPath = path.join(destDir, file.name);
-
-      if (file.isDirectory()) {
-        await recursiveCopy(currentPath, newPath);
-      } else {
-        await fs.copyFile(currentPath, newPath);
-      }
-    }
-  } catch (err) {
-    console.error('Error copying directory or file:', err);
-  }
-}
-
 async function syncDirectories() {
   try {
+    await fs.mkdir(newDirPath, { recursive: true });
+
     const sourceFiles = await fs.readdir(currentDirPath, {
       withFileTypes: true,
     });
     const targetFiles = await fs.readdir(newDirPath, { withFileTypes: true });
+
     for (const file of targetFiles) {
       const targetPath = path.join(newDirPath, file.name);
       const sourcePath = path.join(currentDirPath, file.name);
