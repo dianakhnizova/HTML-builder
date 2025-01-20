@@ -23,7 +23,7 @@ const path = require('path');
       );
       template = template.replace(match, componentContent);
     } catch (err) {
-      console.error(`Не удалось найти компонент: ${componentName}`);
+      console.error(`Could not find component: ${componentName}`);
     }
   }
   await fs.promises.writeFile(
